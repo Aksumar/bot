@@ -10,11 +10,17 @@ class wit_client(object):
 
     def _get_max_proba(self, list):
         p = -1
-        ans = ""
+        ans = []
+        ansi = ""
         for dic in list:
             if dic["confidence"] > p:
                 p = dic["confidence"]
-                ans = dic["value"]
+                ansi = dic["value"]
+        for dic in list:
+            if dic["confidence"] == p:
+                ans.append(dic["value"])
+        if not len(ans):
+            ans.append(ansi)
         return ans
 
     def get_dishes_list(self, text):
@@ -33,4 +39,4 @@ class wit_client(object):
 
 wit = wit_client(token)
 
-wit.get_dishes_list("салат греческий")
+print(wit.get_dishes_list("салат греческий и априори"))
