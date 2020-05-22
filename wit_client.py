@@ -37,11 +37,12 @@ class wit_client(object):
                         dic['value'] = self.trans[dish_name] + " " + dic["value"]
                     mb_dishes += resp["entities"].get(dish_name)
             respi["dish"] = self._get_max_proba(mb_dishes)
-            respi["dish"][0] += " " + self._get_max_proba(resp["entities"]["addons"])[0]
+            if resp["entities"].get("addons") != None:
+                respi["dish"][0] += " " + self._get_max_proba(resp["entities"]["addons"])[0]
         return respi
 
 
 if __name__ == "__main__":
     wit = wit_client(token)
 
-    print(wit.get_dishes_list("салат греческий без лука"))
+    print(wit.get_dishes_list("салат греческий"))
