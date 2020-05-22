@@ -7,6 +7,7 @@ class wit_client(object):
         self._token = token
         self._client = Wit(self._token)
         self.dishes_name = ["soup_name", "pizza_name", "salad_name", "burger_name"]
+        self.trans = {"soup_name" : "суп", "pizza_name" : "пицца", "salad_name" : "салат", "berger_name" : "бургер"}
 
     def _get_max_proba(self, list):
         p = -1
@@ -32,11 +33,14 @@ class wit_client(object):
             mb_dishes = []
             for dish_name in self.dishes_name:
                 if resp["entities"].get(dish_name) != None:
+                    for dic in resp["entities"].get(dish_name):
+                        dic['value'] = self.trans[dish_name] + " " + dic["value"]
                     mb_dishes += resp["entities"].get(dish_name)
             respi["dish"] = self._get_max_proba(mb_dishes)
         return respi
 
 
-wit = wit_client(token)
+if __name__ == "__main__":
+    wit = wit_client(token)
 
-print(wit.get_dishes_list("салат греческий и априори"))
+    print(wit.get_dishes_list("салат греческий и априори"))
