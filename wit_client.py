@@ -12,14 +12,17 @@ class wit_client(object):
     def _get_max_proba(self, list):
         p = -1
         ans = []
-        ansi = ""
+        ansi = None
         for dic in list:
             if dic["confidence"] > p:
                 p = dic["confidence"]
-                ansi = dic["value"]
+                ansi = dic.copy()
+                ansi.pop("confidence")
         for dic in list:
             if dic["confidence"] == p:
-                ans.append(dic["value"])
+                a = dic.copy()
+                a.pop("confidence")
+                ans.append(a)
         if not len(ans):
             ans.append(ansi)
         return ans
@@ -27,22 +30,36 @@ class wit_client(object):
     def get_dishes_list(self, text):
         resp = self._client.message(text)
         respi = None
-        if resp.get("entities") != None:
+        if resp.get("entities").get("intent") is None:
+            return {"intent" : None, "dishes" : None, "constructor" : True}
+        if not resp.get("entities") is None:
             respi = dict()
             respi["intent"] = self._get_max_proba(resp["entities"]["intent"])
-            mb_dishes = []
+            mb_dishes = {"pizza" : [], "salad" : [], "burger" : []}
             for dish_name in self.dishes_name:
-                if resp["entities"].get(dish_name) != None:
+                if not resp["entities"].get(dish_name) is None:
                     for dic in resp["entities"].get(dish_name):
                         dic['value'] = self.trans[dish_name] + " " + dic["value"]
-                    mb_dishes += resp["entities"].get(dish_name)
-            respi["dish"] = self._get_max_proba(mb_dishes)
-            if resp["entities"].get("addons") != None:
-                respi["dish"][0] += " " + self._get_max_proba(resp["entities"]["addons"])[0]
+                        dic['type'] = dish_name[:-5]
+                    mb_dishes[dish_name[:-5]] += resp["entities"].get(dish_name)
+            if not resp["entities"].get("addons") is None:
                 respi["addons"] = []
                 for dic in resp["entities"].get("addons"):
                     respi["addons"].append(dic['value'])
-        return respi
+                for dish in mb_dishes["salad"] + mb_dishes["burger"]:
+                    dish["addons"] = respi['addons']
+            if not resp["entities"].get("pizza_addons") is None:
+                respi["pizza_addons"] = []
+                for dic in resp["entities"].get("pizza_addons"):
+                    respi["pizza_addons"].append(dic['value'])
+                for pizza in mb_dishes["pizza"]:
+                    pizza["addons"] = respi['pizza_addons']
+
+        respi["dishes"] = []
+        for name in ["pizza", "salad", "burger"]:
+            if not self._get_max_proba(mb_dishes[name])[0] is None:
+                respi["dishes"] += self._get_max_proba(mb_dishes[name])
+        return {"intent" : respi["intent"], "dishes" : respi["dishes"], "constructor" : not len(respi["dishes"])}
 
 
 if __name__ == "__main__":
