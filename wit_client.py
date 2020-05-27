@@ -39,10 +39,13 @@ class wit_client(object):
             respi["dish"] = self._get_max_proba(mb_dishes)
             if resp["entities"].get("addons") != None:
                 respi["dish"][0] += " " + self._get_max_proba(resp["entities"]["addons"])[0]
+                respi["addons"] = []
+                for dic in resp["entities"].get("addons"):
+                    respi["addons"].append(dic['value'])
         return respi
 
 
 if __name__ == "__main__":
     wit = wit_client(token)
 
-    print(wit.get_dishes_list("салат греческий"))
+    print(wit.get_dishes_list("салат греческий без лука"))
