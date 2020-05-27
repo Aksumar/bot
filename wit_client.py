@@ -9,7 +9,7 @@ class wit_client(object):
         self.dishes_name = ["soup_name", "pizza_name", "salad_name", "burger_name"]
         self.trans = {"soup_name" : "суп", "pizza_name" : "пицца", "salad_name" : "салат", "berger_name" : "бургер"}
 
-    def _get_max_proba(self, list):
+    def _get_max_proba(self, list, isDish):
         p = -1
         ans = []
         ansi = None
@@ -18,10 +18,14 @@ class wit_client(object):
                 p = dic["confidence"]
                 ansi = dic.copy()
                 ansi.pop("confidence")
+                if ansi.get("addons") is None and isDish:
+                    ansi["addons"] = None
         for dic in list:
             if dic["confidence"] == p:
                 a = dic.copy()
                 a.pop("confidence")
+                if a.get("addons") is None and isDish:
+                    a["addons"] = None
                 ans.append(a)
         if not len(ans):
             ans.append(ansi)
@@ -34,7 +38,7 @@ class wit_client(object):
             return {"intent" : None, "dishes" : None, "constructor" : True}
         if not resp.get("entities") is None:
             respi = dict()
-            respi["intent"] = self._get_max_proba(resp["entities"]["intent"])
+            respi["intent"] = self._get_max_proba(resp["entities"]["intent"], False)
             mb_dishes = {"pizza" : [], "salad" : [], "burger" : []}
             for dish_name in self.dishes_name:
                 if not resp["entities"].get(dish_name) is None:
@@ -57,12 +61,12 @@ class wit_client(object):
 
         respi["dishes"] = []
         for name in ["pizza", "salad", "burger"]:
-            if not self._get_max_proba(mb_dishes[name])[0] is None:
-                respi["dishes"] += self._get_max_proba(mb_dishes[name])
+            if not self._get_max_proba(mb_dishes[name], True)[0] is None:
+                respi["dishes"] += self._get_max_proba(mb_dishes[name], True)
         return {"intent" : respi["intent"], "dishes" : respi["dishes"], "constructor" : not len(respi["dishes"])}
 
 
 if __name__ == "__main__":
     wit = wit_client(token)
 
-    print(wit.get_dishes_list("салат греческий без лука"))
+    print(wit.get_dishes_list("салат греческий без лука и пицца охотничья с оливки"))
