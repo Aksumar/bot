@@ -69,4 +69,4 @@ class wit_client(object):
 if __name__ == "__main__":
     wit = wit_client(token)
 
-    print(wit.get_dishes_list("салат греческий без лука и пицца охотничья с оливки"))
+    print(wit.get_dishes_list("охотничья с помидорами"))
