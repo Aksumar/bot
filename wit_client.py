@@ -31,15 +31,16 @@ class wit_client(object):
             ans.append(ansi)
         return ans
 
-    def get_dishes_list(self, text):
+    def _get_dishes(self, text):
         resp = self._client.message(text)
         respi = None
         if resp.get("entities").get("intent") is None:
-            return {"intent" : None, "dishes" : None, "constructor" : True}
+            return {"intent": None, "dishes": None, "constructor": True}
+        size, dough = None, None
         if not resp.get("entities") is None:
             respi = dict()
             respi["intent"] = self._get_max_proba(resp["entities"]["intent"], False)
-            mb_dishes = {"pizza" : [], "salad" : [], "burger" : []}
+            mb_dishes = {"pizza": [], "salad": [], "burger": []}
             for dish_name in self.dishes_name:
                 if not resp["entities"].get(dish_name) is None:
                     for dic in resp["entities"].get(dish_name):
@@ -63,10 +64,27 @@ class wit_client(object):
         for name in ["pizza", "salad", "burger"]:
             if not self._get_max_proba(mb_dishes[name], True)[0] is None:
                 respi["dishes"] += self._get_max_proba(mb_dishes[name], True)
-        return {"intent" : respi["intent"], "dishes" : respi["dishes"], "constructor" : not len(respi["dishes"])}
+        for i in range(len(respi["dishes"])):
+            dish = respi["dishes"][i]
+            if dish.get('type') == "pizza":
+                if not resp["entities"].get("pizza_dough") is None and i < len(resp["entities"].get("pizza_dough")):
+                    dish["dough"] = resp["entities"].get("pizza_dough")[i].get("value")
+                else:
+                    dish["dough"] = None
+                if not resp["entities"].get("pizza_size") is None and i < len(resp["entities"].get("pizza_size")):
+                    dish["size"] = resp["entities"].get("pizza_size")[i].get("value")
+                else:
+                    dish["size"] = None
+        return {"intent": respi["intent"], "dishes": respi["dishes"], "constructor": not len(respi["dishes"])}
+
+    def get_dishes_list(self, text):
+        try:
+            return self._get_dishes(text)
+        except Exception:
+            return {'intent': None, 'dishes': None, 'constructor': True}
 
 
 if __name__ == "__main__":
     wit = wit_client(token)
 
-    print(wit.get_dishes_list("охотничья с помидорами"))
+    print(wit.get_dishes_list("охотничья 30 см и маргарита 20 см"))
