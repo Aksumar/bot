@@ -52,7 +52,7 @@ class wit_client(object):
             if text == "первое" or text == "1":
                 return {'size':"тонкое"}
             elif text == "второе" or text == "2":
-                return {'size':'толстое'}
+                return {'size':'пышное'}
             resp = self._client.message(text)
             if not resp.get("entities").get("pizza_dough") is None and resp.get("entities").get("pizza_name") is None:
                 return {'size': resp.get("entities").get("pizza_dough")[0].get("value")}
@@ -121,4 +121,4 @@ class wit_client(object):
 if __name__ == "__main__":
     wit = wit_client(token)
 
-    print(wit.get_dishes_list("30 см"))
+    print(wit.get_dishes_list("что заказать?"))
