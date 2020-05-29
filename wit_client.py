@@ -32,8 +32,28 @@ class wit_client(object):
             ans.append(ansi)
         return ans
 
+    def get_size(self, text):
+        try:
+            resp = self._client.message(text)
+            if not resp.get("entities").get("pizza_size") is None and resp.get("entities").get("pizza_name") is None:
+                return {'size':resp.get("entities").get("pizza_size")[0].get("value")}
+            return {}
+        except Exception:
+            return {}
+
+    def get_dough(self, text):
+        try:
+            resp = self._client.message(text)
+            if not resp.get("entities").get("pizza_dough") is None and resp.get("entities").get("pizza_name") is None:
+                return {'size': resp.get("entities").get("pizza_dough")[0].get("value")}
+            return {}
+        except Exception:
+            return {}
+
     def _get_dishes(self, text):
         resp = self._client.message(text)
+        if not resp.get("entities").get("pizza_size") is None and resp.get("entities").get("pizza_name") is None:
+            return {'size':resp.get("entities").get("pizza_size")[0].get("value")}
         respi = None
         if resp.get("entities").get("intent") is None:
             return {"intent": None, "dishes": None, "constructor": True}
@@ -91,4 +111,4 @@ class wit_client(object):
 if __name__ == "__main__":
     wit = wit_client(token)
 
-    print(wit.get_dishes_list("салат греческий без лука"))
+    print(wit.get_dishes_list("30 см"))
