@@ -1,4 +1,5 @@
 from wit import Wit
+import pymorphy2
 
 token = "VJ56M3RHCYN26M6EPKA3S4XTE5EHMDSU"
 
@@ -64,8 +65,11 @@ class wit_client(object):
         for name in ["pizza", "salad", "burger"]:
             if not self._get_max_proba(mb_dishes[name], True)[0] is None:
                 respi["dishes"] += self._get_max_proba(mb_dishes[name], True)
+        lemmatizer_rus = pymorphy2.MorphAnalyzer()
         for i in range(len(respi["dishes"])):
             dish = respi["dishes"][i]
+            if not dish.get("addons") is None:
+                dish['addons'] = [lemmatizer_rus.parse(word)[0].normal_form for word in dish['addons']]
             if dish.get('type') == "pizza":
                 if not resp["entities"].get("pizza_dough") is None and i < len(resp["entities"].get("pizza_dough")):
                     dish["dough"] = resp["entities"].get("pizza_dough")[i].get("value")
@@ -87,4 +91,4 @@ class wit_client(object):
 if __name__ == "__main__":
     wit = wit_client(token)
 
-    print(wit.get_dishes_list("охотничья 30 см и маргарита 20 см"))
+    print(wit.get_dishes_list("салат греческий без лука"))
