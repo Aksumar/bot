@@ -38,7 +38,7 @@ def get_pizza_price(name, dough, size):
         elif dough == 'толстое' and size == 31: return 655
         elif dough == 'толстое' and size == 36: return 815
         else: return 0
-    
+
     elif name == 'аджапсандал с ягненком':
         if dough == 'тонкое' and size == 20: return 387
         elif dough == 'тонкое' and size == 31: return 695
@@ -53,7 +53,7 @@ def get_pizza_price(name, dough, size):
         return 179
     elif name == 'кальцоне французская':
         return 179
-    
+
     elif name == 'кальцоне суприм':
         return 179
     elif name == 'морская делюкс':
@@ -80,7 +80,7 @@ def get_pizza_price(name, dough, size):
         elif dough == 'толстое' and size == 31: return 759
         elif dough == 'толстое' and size == 36: return 935
         else: return 0
-        
+
     elif name == 'мексиканская':
         if dough == 'тонкое' and size == 20: return 315
         elif dough == 'тонкое' and size == 31: return 537
@@ -113,7 +113,7 @@ def get_pizza_price(name, dough, size):
         elif dough == 'толстое' and size == 31: return 599
         elif dough == 'толстое' and size == 36: return 787
         else: return 0
-        
+
     elif name == 'цезарь':
         if dough == 'тонкое' and size == 20: return 399
         elif dough == 'тонкое' and size == 31: return 725
@@ -146,7 +146,7 @@ def get_pizza_price(name, dough, size):
         elif dough == 'толстое' and size == 31: return 1015
         elif dough == 'толстое' and size == 36: return 1415
         else: return 0
-        
+
     elif name == 'гавайская':
         if dough == 'тонкое' and size == 20: return 299
         elif dough == 'тонкое' and size == 31: return 569
@@ -179,7 +179,7 @@ def get_pizza_price(name, dough, size):
         elif dough == 'толстое' and size == 31: return 877
         elif dough == 'толстое' and size == 36: return 999
         else: return 0
-    
+
     elif name == '4 сыра':
         if dough == 'тонкое' and size == 20: return 317
         elif dough == 'тонкое' and size == 31: return 627
@@ -195,3 +195,7 @@ def get_pizza_price(name, dough, size):
     elif name == 'закрытая суприм':
         return 1057
 
+
+
+
+print(get_pizza_price('пицца 4 сыра' , 'тонкое',20))

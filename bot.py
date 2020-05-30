@@ -3,7 +3,6 @@ from misc import dp
 import handlers
 
 
-
 def on_start():
     print("Vivat бот запущен")
 
